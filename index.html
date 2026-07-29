@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculadora de Financiamiento — Autos</title>
+<style>
+  :root{--p:#5B3FB5;--pl:#F0EBFF;--d:#1A1A1A;--g:#6B6B6B;--b:#E0DAF0;}
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#F7F6FB;color:var(--d);margin:0;padding:24px;display:flex;justify-content:center;}
+  .card{background:#fff;border:1px solid var(--b);border-radius:16px;max-width:480px;width:100%;padding:32px;box-shadow:0 4px 24px rgba(91,63,181,.06);}
+  .badge{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--p);background:var(--pl);padding:4px 10px;border-radius:20px;margin-bottom:14px;}
+  h1{font-size:22px;margin:0 0 4px;}
+  p.sub{color:var(--g);font-size:14px;margin:0 0 20px;}
+  label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px;}
+  input{width:100%;padding:11px 12px;border:1px solid var(--b);border-radius:10px;font-size:15px;outline:none;}
+  input:focus{border-color:var(--p);}
+  .row{display:flex;gap:12px;}
+  .row>div{flex:1;}
+  .result{margin-top:24px;background:var(--pl);border-radius:12px;padding:20px;text-align:center;}
+  .result .label{font-size:13px;color:var(--g);}
+  .result .amount{font-size:34px;font-weight:700;color:var(--p);margin-top:4px;}
+  .break{display:flex;justify-content:space-between;margin-top:14px;font-size:13px;color:var(--g);border-top:1px solid #E4DEF5;padding-top:12px;}
+  .break b{color:var(--d);}
+  footer{margin-top:18px;text-align:center;font-size:11px;color:var(--g);}
+</style>
+</head>
+<body>
+<div class="card">
+  <span class="badge">TRUE-SEC · DEALERSHIP</span>
+  <h1>Calculadora de Financiamiento</h1>
+  <p class="sub">Estimá la cuota mensual de tu auto</p>
+
+  <label for="precio">Precio del vehículo ($)</label>
+  <input id="precio" type="number" min="0" value="25000" />
+
+  <label for="enganche">Enganche / pago inicial ($)</label>
+  <input id="enganche" type="number" min="0" value="5000" />
+
+  <div class="row">
+    <div>
+      <label for="tasa">Tasa anual (%)</label>
+      <input id="tasa" type="number" min="0" step="0.1" value="9.5" />
+    </div>
+    <div>
+      <label for="plazo">Plazo (meses)</label>
+      <input id="plazo" type="number" min="1" value="60" />
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="label">Cuota mensual</div>
+    <div class="amount" id="cuota">$0</div>
+    <div class="break"><span>Monto financiado</span><b id="financiado">$0</b></div>
+    <div class="break"><span>Total a pagar</span><b id="total">$0</b></div>
+    <div class="break"><span>Total de intereses</span><b id="intereses">$0</b></div>
+  </div>
+
+  <footer>Estimación referencial. Sujeta a aprobación crediticia del dealership.</footer>
+</div>
+<script>
+  const $=(id)=>document.getElementById(id);
+  const money=(n)=>"$"+n.toLocaleString("en-US",{maximumFractionDigits:2});
+  function calc(){
+    const precio=Math.max(0,parseFloat($("precio").value)||0);
+    const enganche=Math.min(precio,Math.max(0,parseFloat($("enganche").value)||0));
+    const tasa=Math.max(0,parseFloat($("tasa").value)||0);
+    const meses=Math.max(1,parseInt($("plazo").value)||1);
+    const P=precio-enganche;
+    const r=tasa/12/100;
+    let cuota;
+    if(r===0){ cuota=P/meses; }
+    else { cuota=P*r/(1-Math.pow(1+r,-meses)); }
+    const total=cuota*meses;
+    const intereses=total-P;
+    $("cuota").textContent=money(cuota);
+    $("financiado").textContent=money(P);
+    $("total").textContent=money(total);
+    $("intereses").textContent=money(intereses);
+  }
+  ["precio","enganche","tasa","plazo"].forEach(id=>$(id).addEventListener("input",calc));
+  calc();
+</script>
+</body>
+</html>
